@@ -1,0 +1,28 @@
+.navbar {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #007f5f;
+    display: flex;
+    justify-content: space-around;
+    padding: 0.5rem 0;
+    color: white;
+    font-size: 0.9rem;
+    z-index: 1000;
+  }
+  
+  .navbar a {
+    color: white;
+    text-decoration: none;
+    text-align: center;
+  }
+  
+  .navbar a svg {
+    font-size: 1.2rem;
+    margin-bottom: 4px;
+  }
+  
+  .navbar a.active {
+    color: #caffbf;
+  }
+  

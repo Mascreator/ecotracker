@@ -1,66 +1,62 @@
-import React, { useState } from 'react';
+// src/pages/NuovaPianta.js
+import React, { useState } from "react";
 
-function NuovaPianta() {
-  const [nome, setNome] = useState('');
-  const [immagine, setImmagine] = useState(null);
-  const [posizione, setPosizione] = useState(null);
-  const [data, setData] = useState(new Date().toLocaleDateString());
+const NuovaPianta = () => {
+  const [nomePianta, setNomePianta] = useState("");
+  const [foto, setFoto] = useState(null);
+  const [data, setData] = useState("");
+  const [localizzazione, setLocalizzazione] = useState("");
 
-  const prendiPosizione = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((pos) => {
-        setPosizione({
-          lat: pos.coords.latitude,
-          lon: pos.coords.longitude
-        });
-      });
-    } else {
-      alert("Geolocalizzazione non supportata dal browser.");
-    }
-  };
-
-  const salvaPianta = () => {
-    console.log("Nome:", nome);
-    console.log("Immagine:", immagine);
-    console.log("Posizione:", posizione);
-    console.log("Data:", data);
-    alert("Pianta salvata (in console per ora)!");
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Logica per gestire l'inserimento della nuova pianta
+    console.log({
+      nomePianta,
+      foto,
+      data,
+      localizzazione,
+    });
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h2>Aggiungi una nuova pianta 🌱</h2>
-      <input
-        type="text"
-        placeholder="Nome della pianta"
-        value={nome}
-        onChange={(e) => setNome(e.target.value)}
-        style={{ display: 'block', marginBottom: '10px' }}
-      />
-
-      <input
-        type="file"
-        accept="image/*"
-        onChange={(e) => setImmagine(e.target.files[0])}
-        style={{ display: 'block', marginBottom: '10px' }}
-      />
-
-      <button onClick={prendiPosizione} style={{ marginBottom: '10px' }}>
-        📍 Prendi la posizione
-      </button>
-
-      {posizione && (
+    <div>
+      <h1>Nuova Pianta</h1>
+      <form onSubmit={handleSubmit}>
         <div>
-          <p>Latitudine: {posizione.lat}</p>
-          <p>Longitudine: {posizione.lon}</p>
+          <label>Nome della pianta:</label>
+          <input
+            type="text"
+            value={nomePianta}
+            onChange={(e) => setNomePianta(e.target.value)}
+          />
         </div>
-      )}
-
-      <p>Data: {data}</p>
-
-      <button onClick={salvaPianta} style={{ marginTop: '10px' }}>💾 Salva Pianta</button>
+        <div>
+          <label>Carica una foto:</label>
+          <input
+            type="file"
+            onChange={(e) => setFoto(e.target.files[0])}
+          />
+        </div>
+        <div>
+          <label>Data:</label>
+          <input
+            type="date"
+            value={data}
+            onChange={(e) => setData(e.target.value)}
+          />
+        </div>
+        <div>
+          <label>Localizzazione GPS:</label>
+          <input
+            type="text"
+            value={localizzazione}
+            onChange={(e) => setLocalizzazione(e.target.value)}
+          />
+        </div>
+        <button type="submit">Salva</button>
+      </form>
     </div>
   );
-}
+};
 
 export default NuovaPianta;

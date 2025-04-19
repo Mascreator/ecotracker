@@ -1,4 +1,3 @@
-// src/App.js
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./auth/Login";
@@ -9,6 +8,7 @@ import Segnalazioni from "./pages/Segnalazioni"; // modificato il nome per rispe
 import Checklist from "./pages/Checklist";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import AreaDetails from "./pages/AreaDetails"; // Nuovo componente per i dettagli delle aree protette
 
 function App() {
   return (
@@ -46,6 +46,15 @@ function App() {
           element={
             <ProtectedRoute>
               <Checklist />
+            </ProtectedRoute>
+          }
+        />
+        {/* Aggiunta la route per i dettagli delle aree protette */}
+        <Route
+          path="/area/:name"
+          element={
+            <ProtectedRoute>
+              <AreaDetails />
             </ProtectedRoute>
           }
         />

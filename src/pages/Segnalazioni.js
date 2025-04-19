@@ -12,6 +12,7 @@ const Segnalazioni = () => {
   const [photo, setPhoto] = useState(null);
   const [location, setLocation] = useState(null);
   const [date, setDate] = useState("");
+  const [status, setStatus] = useState("");
 
   const handlePhotoChange = (e) => {
     setPhoto(e.target.files[0]);
@@ -26,27 +27,45 @@ const Segnalazioni = () => {
             longitude: pos.coords.longitude,
           });
         },
-        (err) => {
-          alert("Errore nel recupero della posizione.");
+        () => {
+          setStatus("Errore durante il caricamento");
         }
       );
     } else {
-      alert("Geolocalizzazione non supportata dal browser.");
+      setStatus("Geolocalizzazione non supportata");
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({
-      categoria: selectedCategory,
-      foto: photo,
-      posizione: location,
-      data: date,
-    });
-    alert("Segnalazione inviata!");
-    setPhoto(null);
-    setLocation(null);
-    setDate("");
+
+    if (!photo || !date || !location) {
+      setStatus("Compilare tutti i campi richiesti");
+      return;
+    }
+
+    try {
+      // Simula un invio
+      console.log({
+        categoria: selectedCategory,
+        foto: photo,
+        posizione: location,
+        data: date,
+      });
+
+      setStatus("Caricato correttamente");
+
+      // Reset form
+      setPhoto(null);
+      setDate("");
+      setLocation(null);
+
+      // Facoltativo: reset selezione categoria
+      // setSelectedCategory("pesci");
+    } catch (err) {
+      console.error(err);
+      setStatus("Errore durante il caricamento");
+    }
   };
 
   return (
@@ -116,7 +135,7 @@ const Segnalazioni = () => {
             Ottieni posizione
           </button>
           {location && (
-            <p style={{ marginTop: "10px" }}>
+            <p style={{ marginTop: "10px", fontSize: "14px" }}>
               Lat: {location.latitude.toFixed(5)} <br />
               Lon: {location.longitude.toFixed(5)}
             </p>
@@ -137,6 +156,23 @@ const Segnalazioni = () => {
         >
           Invia segnalazione
         </button>
+
+        {status && (
+          <p
+            style={{
+              textAlign: "center",
+              marginTop: "15px",
+              color:
+                status === "Caricato correttamente"
+                  ? "green"
+                  : status === "Compilare tutti i campi richiesti"
+                  ? "#e67e22"
+                  : "red",
+            }}
+          >
+            {status}
+          </p>
+        )}
       </form>
     </div>
   );

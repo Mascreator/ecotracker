@@ -1,5 +1,8 @@
 // src/pages/NuovaPianta.js
 import React, { useState } from "react";
+import { storage, db } from "../firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { collection, addDoc } from "firebase/firestore";
 
 const NuovaPianta = () => {
   const [nomePianta, setNomePianta] = useState("");
@@ -25,7 +28,7 @@ const NuovaPianta = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!nomePianta || !foto || !data || !localizzazione) {
@@ -34,11 +37,18 @@ const NuovaPianta = () => {
     }
 
     try {
-      console.log({
-        nomePianta,
-        foto,
+      // 1. Carica immagine su Firebase Storage
+      const storageRef = ref(storage, `piante/${Date.now()}_${foto.name}`);
+      await uploadBytes(storageRef, foto);
+      const urlImmagine = await getDownloadURL(storageRef);
+
+      // 2. Salva i dati su Firestore
+      await addDoc(collection(db, "nuove-piante"), {
+        nome: nomePianta,
+        fotoURL: urlImmagine,
         data,
-        localizzazione,
+        posizione: localizzazione,
+        createdAt: new Date()
       });
 
       setMessaggio("✅ Caricato correttamente!");
@@ -49,7 +59,6 @@ const NuovaPianta = () => {
       setData("");
       setLocalizzazione("");
 
-      // Refresh dopo 2 secondi
       setTimeout(() => setMessaggio(""), 2000);
     } catch (error) {
       console.error("Errore durante il caricamento:", error);

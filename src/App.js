@@ -3,58 +3,35 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./auth/Login";
 import Register from "./auth/Register";
 import Home from "./pages/Home";
-import NuovaPianta from "./pages/NuovaPianta"; // modificato il nome per rispecchiare il file corretto
-import Segnalazioni from "./pages/Segnalazioni"; // modificato il nome per rispecchiare il file corretto
+import NuovaPianta from "./pages/NuovaPianta";
+import Segnalazioni from "./pages/Segnalazioni";
 import Checklist from "./pages/Checklist";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./routes/ProtectedRoute";
-import AreaDetails from "./pages/AreaDetails"; // Nuovo componente per i dettagli delle aree protette
+import AreaDetails from "./pages/AreaDetails";
 
 function App() {
   return (
     <Router>
-      <Navbar />
       <Routes>
+        {/* rotte pubbliche */}
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
+
+        {/* rotte protette, tutte sotto lo stesso path "/*" */}
         <Route
-          path="/home"
+          path="/*"
           element={
             <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/nuova-pianta"
-          element={
-            <ProtectedRoute>
-              <NuovaPianta />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/segnalazioni"
-          element={
-            <ProtectedRoute>
-              <Segnalazioni />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/checklist"
-          element={
-            <ProtectedRoute>
-              <Checklist />
-            </ProtectedRoute>
-          }
-        />
-        {/* Aggiunta la route per i dettagli delle aree protette */}
-        <Route
-          path="/area/:name"
-          element={
-            <ProtectedRoute>
-              <AreaDetails />
+              {/* Navbar visibile solo dopo il login */}
+              <Navbar />
+              <Routes>
+                <Route path="home" element={<Home />} />
+                <Route path="nuova-pianta" element={<NuovaPianta />} />
+                <Route path="segnalazioni" element={<Segnalazioni />} />
+                <Route path="checklist" element={<Checklist />} />
+                <Route path="area/:name" element={<AreaDetails />} />
+              </Routes>
             </ProtectedRoute>
           }
         />

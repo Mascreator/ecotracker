@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { db } from "../firebase";
+import { collection, addDoc } from "firebase/firestore";
 
 const categories = [
   { label: "🐟 Pesci", key: "pesci" },
@@ -28,43 +30,35 @@ const Segnalazioni = () => {
           });
         },
         () => {
-          setStatus("Errore durante il caricamento");
+          alert("Errore nel recupero della posizione.");
         }
       );
-    } else {
-      setStatus("Geolocalizzazione non supportata");
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!photo || !date || !location) {
-      setStatus("Compilare tutti i campi richiesti");
+    if (!photo || !location || !date) {
+      setStatus("❌ Compila tutti i campi richiesti");
       return;
     }
-
+    setStatus("⏳ Invio in corso...");
     try {
-      // Simula un invio
-      console.log({
+      await addDoc(collection(db, "segnalazioni"), {
         categoria: selectedCategory,
-        foto: photo,
-        posizione: location,
         data: date,
+        posizione: location,
+        fotoNome: photo.name,
+        createdAt: new Date(),
       });
-
-      setStatus("Caricato correttamente");
-
-      // Reset form
+      setStatus("✅ Segnalazione inviata correttamente!");
+      // reset form
       setPhoto(null);
-      setDate("");
       setLocation(null);
-
-      // Facoltativo: reset selezione categoria
-      // setSelectedCategory("pesci");
+      setDate("");
     } catch (err) {
       console.error(err);
-      setStatus("Errore durante il caricamento");
+      setStatus("❌ Errore durante l'invio");
     }
   };
 
@@ -72,14 +66,13 @@ const Segnalazioni = () => {
     <div style={{ padding: "20px", backgroundColor: "#ecf0f1", minHeight: "100vh" }}>
       <h2 style={{ textAlign: "center" }}>Segnalazioni</h2>
 
-      <div style={{ display: "flex", justifyContent: "center", marginBottom: "20px", flexWrap: "wrap" }}>
+      <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "10px", marginBottom: "20px" }}>
         {categories.map((cat) => (
           <button
             key={cat.key}
             onClick={() => setSelectedCategory(cat.key)}
             style={{
               padding: "10px 15px",
-              margin: "5px",
               backgroundColor: selectedCategory === cat.key ? "#27ae60" : "#bdc3c7",
               color: "white",
               border: "none",
@@ -106,7 +99,7 @@ const Segnalazioni = () => {
       >
         <div style={{ marginBottom: "15px" }}>
           <label>Foto:</label>
-          <input type="file" accept="image/*" onChange={handlePhotoChange} />
+          <input type="file" accept="image/*" onChange={handlePhotoChange} required />
         </div>
 
         <div style={{ marginBottom: "15px" }}>
@@ -115,6 +108,7 @@ const Segnalazioni = () => {
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
+            required
             style={{ marginLeft: "10px" }}
           />
         </div>
@@ -135,7 +129,7 @@ const Segnalazioni = () => {
             Ottieni posizione
           </button>
           {location && (
-            <p style={{ marginTop: "10px", fontSize: "14px" }}>
+            <p style={{ marginTop: "10px" }}>
               Lat: {location.latitude.toFixed(5)} <br />
               Lon: {location.longitude.toFixed(5)}
             </p>
@@ -156,24 +150,8 @@ const Segnalazioni = () => {
         >
           Invia segnalazione
         </button>
-
-        {status && (
-          <p
-            style={{
-              textAlign: "center",
-              marginTop: "15px",
-              color:
-                status === "Caricato correttamente"
-                  ? "green"
-                  : status === "Compilare tutti i campi richiesti"
-                  ? "#e67e22"
-                  : "red",
-            }}
-          >
-            {status}
-          </p>
-        )}
       </form>
+      {status && <p style={{ textAlign: "center", marginTop: "15px" }}>{status}</p>}
     </div>
   );
 };
